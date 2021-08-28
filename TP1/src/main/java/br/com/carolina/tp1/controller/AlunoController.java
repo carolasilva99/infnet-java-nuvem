@@ -20,6 +20,7 @@ public class AlunoController {
     public Collection<Aluno> listarAlunos() {
         return repository.listar();
     }
+
     @GetMapping(path = {"/{id}"})
     public Aluno obterAluno(@PathVariable int id) {
         return repository.obter(id);
