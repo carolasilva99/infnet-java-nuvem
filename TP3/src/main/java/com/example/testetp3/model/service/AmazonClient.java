@@ -1,4 +1,5 @@
-package br.com.carolina.tp3.model.service;
+package com.example.testetp3.model.service;
+
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
