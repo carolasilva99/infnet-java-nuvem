@@ -1,22 +1,19 @@
 package com.example.testetp3.model.service;
 
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Objects;
 
@@ -38,23 +35,60 @@ public class AmazonClient {
     }
 
     public String uploadFile(MultipartFile multipartFile) {
-
-        String fileUrl = "";
-        try {
-            File file = convertMultiPartToFile(multipartFile);
-            String fileName = generateFileName(multipartFile);
-            fileUrl = directory + "/" + fileName;
-            s3Client.putObject(bucketName, fileUrl, file);
-            file.delete();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (!multipartFile.isEmpty()) {
+            String fileUrl = "";
+            try {
+                File file = convertMultiPartToFile(multipartFile);
+                String fileName = generateFileName(multipartFile);
+                fileUrl = directory + "/" + fileName;
+                s3Client.putObject(bucketName, fileUrl, file);
+                file.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return fileUrl;
         }
-        return fileUrl;
+        return null;
     }
 
     public String deleteFile(String fileUrl) {
         s3Client.deleteObject(new DeleteObjectRequest(bucketName, fileUrl));
         return "Successfully deleted";
+    }
+
+    public String getFile(String fileUrl) throws IOException {
+        if (fileUrl != null && !fileUrl.isEmpty()) {
+            File file = new File("images/imagem.jpg");
+            s3Client.getObject(new GetObjectRequest(bucketName, fileUrl), file);
+            byte[] bytes = loadFile(file);
+            byte[] encoded = Base64.encodeBase64(bytes);
+            return new String(encoded, StandardCharsets.US_ASCII);
+        }
+        return "";
+    }
+
+    private static byte[] loadFile(File file) throws IOException {
+        InputStream is = new FileInputStream(file);
+
+        long length = file.length();
+        if (length > Integer.MAX_VALUE) {
+            // File is too large
+        }
+        byte[] bytes = new byte[(int)length];
+
+        int offset = 0;
+        int numRead = 0;
+        while (offset < bytes.length
+                && (numRead=is.read(bytes, offset, bytes.length-offset)) >= 0) {
+            offset += numRead;
+        }
+
+        if (offset < bytes.length) {
+            throw new IOException("Could not completely read file "+file.getName());
+        }
+
+        is.close();
+        return bytes;
     }
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {

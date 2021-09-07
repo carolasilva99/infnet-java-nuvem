@@ -1,10 +1,23 @@
 package com.example.testetp3.model.domain;
 
+import javax.persistence.*;
+
+@Entity
+@Table(
+        name="usuario",
+        uniqueConstraints=
+        @UniqueConstraint(columnNames={"email"})
+)
 public class Usuario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String nome;
     private String email;
     private String telefone;
+    private String senha;
+    private String imagemUrl;
+    @OneToOne
     private Endereco endereco;
 
     public Integer getId() {
@@ -37,6 +50,22 @@ public class Usuario {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public String getImagemUrl() {
+        return imagemUrl;
+    }
+
+    public void setImagemUrl(String imagem_url) {
+        this.imagemUrl = imagem_url;
     }
 
     public Endereco getEndereco() {

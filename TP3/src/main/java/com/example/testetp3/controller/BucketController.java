@@ -1,9 +1,17 @@
 package com.example.testetp3.controller;
 
+import com.amazonaws.util.IOUtils;
 import com.example.testetp3.model.service.AmazonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 @RestController
 @RequestMapping("/storage/")
@@ -23,6 +31,11 @@ public class BucketController {
     @DeleteMapping
     public String deleteFile(@RequestPart(value = "url") String fileUrl) {
         return this.amazonClient.deleteFile(fileUrl);
+    }
+
+    @GetMapping
+    public String buscarImagem(@RequestParam String fileUrl) throws IOException {
+        return this.amazonClient.getFile(fileUrl);
     }
 
 }

@@ -1,6 +1,15 @@
 package com.example.testetp3.model.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
 public class Endereco {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     private String cep;
     private String logradouro;
     private String complemento;
@@ -9,6 +18,15 @@ public class Endereco {
     private String uf;
     private String ibge;
     private String gia;
+    private String numero;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getCep() {
         return cep;
@@ -72,5 +90,13 @@ public class Endereco {
 
     public void setGia(String gia) {
         this.gia = gia;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
     }
 }
